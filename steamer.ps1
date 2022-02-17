@@ -120,13 +120,13 @@ $Bloatware = @(
     "Microsoft.ScreenSketch"
     "Microsoft.Xbox.TCUI"
     "Microsoft.XboxGameOverlay"
-    "Microsoft.XboxGameCallableUI"
+    # "Microsoft.XboxGameCallableUI"
     "Microsoft.XboxSpeechToTextOverlay"
     "Microsoft.MixedReality.Portal"
     "Microsoft.XboxIdentityProvider"
     "Microsoft.ZuneMusic"
     "Microsoft.ZuneVideo"
-    "Microsoft.YourPhone"
+    # "Microsoft.YourPhone"
     "Microsoft.Getstarted"
     "Microsoft.MicrosoftOfficeHub"
     "*EclipseManager*"
@@ -165,11 +165,47 @@ $Bloatware = @(
 $RemoveBloatware.Add_Click({
     Write-Host "Removing Bloatware"
 
-    foreach ($Bloat in $Bloatware) {
-        Get-AppxPackage -Name $Bloat| Remove-AppxPackage
-        Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $Bloat | Remove-AppxProvisionedPackage -Online
-        Write-Host "Removing $Bloat..."
+    $BloatwareForm                   = New-Object system.Windows.Forms.Form
+    $BloatwareForm.ClientSize        = New-Object System.Drawing.Point(433,528)
+    $BloatwareForm.text              = "Remove Bloatware"
+    $BloatwareForm.TopMost           = $false
+
+    $BloatwareList                          = New-Object System.Windows.Forms.CheckedListBox
+    $BloatwareList.height                   = 435
+    $BloatwareList.width                    = 415
+    $BloatwareList.location                 = New-Object System.Drawing.Point(10,12)
+
+    $Button1                         = New-Object system.Windows.Forms.Button
+    $Button1.text                    = "Remove Selected Bloatware"
+    $Button1.width                   = 414
+    $Button1.height                  = 53
+    $Button1.location                = New-Object System.Drawing.Point(11,460)
+    $Button1.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',10)
+
+    $BloatwareForm.controls.AddRange(@($BloatwareList,$Button1))
+
+    $Installed = @((Get-AppxPackage).Name)
+
+    ForEach ($item in $Installed) {
+        $BloatwareList.Items.Add($item)
     }
+
+    ForEach ($item in $Bloatware) {
+        $BloatwareList.SetItemChecked($BloatwareList.Items.IndexOf($item), $true);
+    }
+
+    $Button1.Add_Click({
+        For ($i = 0; $i -le $BloatwareList.Items.Count-1; $i++) {
+            if ($BloatwareList.GetItemChecked($i)) {
+                $Bloat = $BloatwareList.Items[$i]
+                Get-AppxPackage -Name $Bloat| Remove-AppxPackage
+                Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $Bloat | Remove-AppxProvisionedPackage -Online
+                Write-Host "Trying to remove $Bloat"
+            }
+        }
+    })
+
+    [void]$BloatwareForm.ShowDialog()
 
     Write-Host "Finished Removing Bloatware Apps"
 })
@@ -191,7 +227,7 @@ $RemoveDefender.Add_Click({
         "\Microsoft\Windows\Windows Defender\Windows Defender Verification"
     )
 
-    foreach ($task in $tasks) {
+    ForEach ($task in $tasks) {
         $parts = $task.split('\')
         $name = $parts[-1]
         $path = $parts[0..($parts.length-2)] -join '\'
