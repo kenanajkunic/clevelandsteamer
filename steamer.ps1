@@ -1,5 +1,7 @@
-$ErrorActionPreference = 'SilentlyContinue'
+Add-Type -AssemblyName System.Windows.Forms
+[System.Windows.Forms.Application]::EnableVisualStyles()
 
+$ErrorActionPreference = 'SilentlyContinue'
 $wshell = New-Object -ComObject Wscript.Shell
 $Button = [System.Windows.MessageBoxButton]::YesNoCancel
 $ErrorIco = [System.Windows.MessageBoxImage]::Error
@@ -8,8 +10,24 @@ If (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 	Exit
 }
 
-Add-Type -AssemblyName System.Windows.Forms
-[System.Windows.Forms.Application]::EnableVisualStyles()
+# GUI Specs
+Write-Host "Checking winget..."
+
+# Check if winget is installed
+if (Test-Path ~\AppData\Local\Microsoft\WindowsApps\winget.exe){
+    'Winget Already Installed'
+}  
+else{
+    # Installing winget from the Microsoft Store
+	Write-Host "Winget not found, installing it now."
+    $ResultText.text = "`r`n" +"`r`n" + "Installing Winget... Please Wait"
+	Start-Process "ms-appinstaller:?source=https://aka.ms/getwinget"
+	$nid = (Get-Process AppInstaller).Id
+	Wait-Process -Id $nid
+	Write-Host Winget Installed
+    $ResultText.text = "`r`n" +"`r`n" + "Winget Installed - Ready for Next Task"
+}
+
 
 $Form                            = New-Object system.Windows.Forms.Form
 $Form.ClientSize                 = New-Object System.Drawing.Point(600,426)
@@ -59,6 +77,13 @@ $DisableTelemetry.height                  = 80
 $DisableTelemetry.location                = New-Object System.Drawing.Point(319,79)
 $DisableTelemetry.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',10)
 
+$InstallSoftware                         = New-Object system.Windows.Forms.Button
+$InstallSoftware.text                    = "Install Software"
+$InstallSoftware.width                   = 252
+$InstallSoftware.height                  = 78
+$InstallSoftware.location                = New-Object System.Drawing.Point(319,315)
+$InstallSoftware.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',10)
+
 $Label3                          = New-Object system.Windows.Forms.Label
 $Label3.text                     = "clevelandsteamer.xyz"
 $Label3.AutoSize                 = $true
@@ -67,7 +92,7 @@ $Label3.height                   = 10
 $Label3.location                 = New-Object System.Drawing.Point(450,393)
 $Label3.Font                     = New-Object System.Drawing.Font('Microsoft Sans Serif',10)
 
-$Form.controls.AddRange(@($Label1,$RemoveBloatware,$RemoveDefender,$UninstallOneDrive,$RemoveCortana,$DisableTelemetry,$Label3))
+$Form.controls.AddRange(@($Label1,$RemoveBloatware,$RemoveDefender,$UninstallOneDrive,$RemoveCortana,$DisableTelemetry,$InstallSoftware,$Label3))
 
 $Label3.Add_Click({
     Start-Process "https://clevelandsteamer.xyz"
@@ -461,6 +486,7 @@ $DisableTelemetry.Add_Click({
 $RemoveCortana.Add_Click({
     # https://github.com/Sycnex/Windows10Debloater/blob/master/Individual%20Scripts/Disable%20Cortana
     Write-Host "Disabling Cortana"
+
     $Cortana1 = "HKCU:\SOFTWARE\Microsoft\Personalization\Settings"
     $Cortana2 = "HKCU:\SOFTWARE\Microsoft\InputPersonalization"
     $Cortana3 = "HKCU:\SOFTWARE\Microsoft\InputPersonalization\TrainedDataStore"
@@ -477,8 +503,64 @@ $RemoveCortana.Add_Click({
 		New-Item $Cortana3
 	}
 	Set-ItemProperty $Cortana3 HarvestContacts -Value 0
+
     Write-Host "Finished Disabling Cortana"
 })
 
+#########################################
+### Install Software
+#########################################
+
+$Software = @(
+    "7zip.7zip"
+    "BraveSoftware.BraveBrowser"
+    "Google.Chrome"
+    "Discord.Discord"
+    "Notepad++.Notepad++"
+    "Microsoft.VisualStudioCode"
+    "VideoLAN.VLC"
+)
+
+$InstallSoftware.Add_Click({
+    Write-Host "Installing Software"
+
+    $SoftwareForm                   = New-Object system.Windows.Forms.Form
+    $SoftwareForm.ClientSize        = New-Object System.Drawing.Point(433,528)
+    $SoftwareForm.text              = "Install Software"
+    $SoftwareForm.TopMost           = $false
+
+    $SoftwareList                          = New-Object System.Windows.Forms.CheckedListBox
+    $SoftwareList.height                   = 435
+    $SoftwareList.width                    = 415
+    $SoftwareList.location                 = New-Object System.Drawing.Point(10,12)
+
+    $InstallButton                         = New-Object system.Windows.Forms.Button
+    $InstallButton.text                    = "Install Selected Software"
+    $InstallButton.width                   = 414
+    $InstallButton.height                  = 53
+    $InstallButton.location                = New-Object System.Drawing.Point(11,460)
+    $InstallButton.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',10)
+
+    $SoftwareForm.controls.AddRange(@($SoftwareList,$InstallButton))
+
+    ForEach ($item in $Software) {
+        $SoftwareList.Items.Add($item)
+    }
+
+    $InstallButton.Add_Click({
+        For ($i = 0; $i -le $SoftwareList.Items.Count-1; $i++) {
+            if ($SoftwareList.GetItemChecked($i)) {
+                $Soft = $SoftwareList.Items[$i]
+                Write-Host "Installing $Soft"
+                winget install -e $Soft | Write-Host
+                if($?) { Write-Host "Installed $Soft" }
+            }
+        }
+    })
+
+    [void]$SoftwareForm.ShowDialog()
+
+    Write-Host "Finished Installing Software"
+})
 
 [void]$Form.ShowDialog()
