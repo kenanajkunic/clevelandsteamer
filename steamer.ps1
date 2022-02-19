@@ -30,73 +30,60 @@ else{
 
 
 $Form                            = New-Object system.Windows.Forms.Form
-$Form.ClientSize                 = New-Object System.Drawing.Point(600,426)
+$Form.ClientSize                 = New-Object System.Drawing.Point(525,400)
 $Form.text                       = "Cleveland Steamer"
 $Form.TopMost                    = $false
-
-$Label1                          = New-Object system.Windows.Forms.Label
-$Label1.text                     = "Cleveland Steamer"
-$Label1.AutoSize                 = $true
-$Label1.width                    = 25
-$Label1.height                   = 10
-$Label1.location                 = New-Object System.Drawing.Point(25,25)
-$Label1.Font                     = New-Object System.Drawing.Font('Microsoft Sans Serif',20)
 
 $RemoveBloatware                         = New-Object system.Windows.Forms.Button
 $RemoveBloatware.text                    = "Remove Bloatware"
 $RemoveBloatware.width                   = 250
-$RemoveBloatware.height                  = 80
-$RemoveBloatware.location                = New-Object System.Drawing.Point(25,79)
+$RemoveBloatware.height                  = 50
+$RemoveBloatware.location                = New-Object System.Drawing.Point(5,5)
 $RemoveBloatware.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',10)
 
 $RemoveDefender                         = New-Object system.Windows.Forms.Button
 $RemoveDefender.text                    = "Remove Windows Defender"
 $RemoveDefender.width                   = 250
-$RemoveDefender.height                  = 80
-$RemoveDefender.location                = New-Object System.Drawing.Point(25,200)
+$RemoveDefender.height                  = 50
+$RemoveDefender.location                = New-Object System.Drawing.Point(5,60)
 $RemoveDefender.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',10)
 
 $UninstallOneDrive                         = New-Object system.Windows.Forms.Button
 $UninstallOneDrive.text                    = "Remove OneDrive"
 $UninstallOneDrive.width                   = 250
-$UninstallOneDrive.height                  = 80
-$UninstallOneDrive.location                = New-Object System.Drawing.Point(23,313)
+$UninstallOneDrive.height                  = 50
+$UninstallOneDrive.location                = New-Object System.Drawing.Point(5,115)
 $UninstallOneDrive.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',10)
 
 $RemoveCortana                         = New-Object system.Windows.Forms.Button
 $RemoveCortana.text                    = "Disable Cortana"
-$RemoveCortana.width                   = 252
-$RemoveCortana.height                  = 78
-$RemoveCortana.location                = New-Object System.Drawing.Point(319,201)
+$RemoveCortana.width                   = 250
+$RemoveCortana.height                  = 50
+$RemoveCortana.location                = New-Object System.Drawing.Point(270,5)
 $RemoveCortana.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',10)
 
 $DisableTelemetry                         = New-Object system.Windows.Forms.Button
 $DisableTelemetry.text                    = "Disable Telemetry"
 $DisableTelemetry.width                   = 250
-$DisableTelemetry.height                  = 80
-$DisableTelemetry.location                = New-Object System.Drawing.Point(319,79)
+$DisableTelemetry.height                  = 50
+$DisableTelemetry.location                = New-Object System.Drawing.Point(270,60)
 $DisableTelemetry.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',10)
 
 $InstallSoftware                         = New-Object system.Windows.Forms.Button
 $InstallSoftware.text                    = "Install Software"
-$InstallSoftware.width                   = 252
-$InstallSoftware.height                  = 78
-$InstallSoftware.location                = New-Object System.Drawing.Point(319,315)
+$InstallSoftware.width                   = 250
+$InstallSoftware.height                  = 50
+$InstallSoftware.location                = New-Object System.Drawing.Point(270,115)
 $InstallSoftware.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',10)
 
-$Label3                          = New-Object system.Windows.Forms.Label
-$Label3.text                     = "clevelandsteamer.xyz"
-$Label3.AutoSize                 = $true
-$Label3.width                    = 25
-$Label3.height                   = 10
-$Label3.location                 = New-Object System.Drawing.Point(450,393)
-$Label3.Font                     = New-Object System.Drawing.Font('Microsoft Sans Serif',10)
+$LogBox                        = New-Object system.Windows.Forms.TextBox
+$LogBox.multiline              = $true
+$LogBox.width                  = 515
+$LogBox.height                 = 100
+$LogBox.location               = New-Object System.Drawing.Point(5,295)
+$LogBox.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',10)
 
-$Form.controls.AddRange(@($Label1,$RemoveBloatware,$RemoveDefender,$UninstallOneDrive,$RemoveCortana,$DisableTelemetry,$InstallSoftware,$Label3))
-
-$Label3.Add_Click({
-    Start-Process "https://clevelandsteamer.xyz"
-})
+$Form.controls.AddRange(@($RemoveBloatware,$RemoveDefender,$UninstallOneDrive,$RemoveCortana,$DisableTelemetry,$InstallSoftware,$LogBox))
 
 #########################################
 ### Remove Bloatware
@@ -188,8 +175,6 @@ $Bloatware = @(
 )
 
 $RemoveBloatware.Add_Click({
-    Write-Host "Removing Bloatware"
-
     $BloatwareForm                   = New-Object system.Windows.Forms.Form
     $BloatwareForm.ClientSize        = New-Object System.Drawing.Point(433,528)
     $BloatwareForm.text              = "Remove Bloatware"
@@ -220,19 +205,23 @@ $RemoveBloatware.Add_Click({
     }
 
     $Button1.Add_Click({
+        Write-Host "Removing Bloatware"
+        $LogBox.text = "`r`n" +"`r`n" + "Removing Bloatware" 
         For ($i = 0; $i -le $BloatwareList.Items.Count-1; $i++) {
             if ($BloatwareList.GetItemChecked($i)) {
                 $Bloat = $BloatwareList.Items[$i]
+                Write-Host "Removing $Bloat"
+                $LogBox.text = "`r`n" +"`r`n" + "Removing $Bloat" 
                 Get-AppxPackage -Name $Bloat| Remove-AppxPackage
                 Get-AppxProvisionedPackage -Online | Where-Object DisplayName -like $Bloat | Remove-AppxProvisionedPackage -Online
-                Write-Host "Trying to remove $Bloat"
+                Write-Host "Finished Removing $Bloat"
+                $LogBox.text = "`r`n" +"`r`n" + "Finished Removing $Bloat"
             }
         }
+        Write-Host "Finished Removing Bloatware Apps"
+        $LogBox.text = "`r`n" +"`r`n" + "Finished Removing Bloatware"
     })
-
     [void]$BloatwareForm.ShowDialog()
-
-    Write-Host "Finished Removing Bloatware Apps"
 })
 
 #########################################
@@ -241,6 +230,7 @@ $RemoveBloatware.Add_Click({
 
 $RemoveDefender.Add_Click({
     Write-Host "Removing Defender"
+    $LogBox.text = "`r`n" +"`r`n" + "Removing Defender"
 
     Write-Host "Elevating priviledges for this process"
     do {} until (Elevate-Privileges SeTakeOwnershipPrivilege)
@@ -283,6 +273,7 @@ $RemoveDefender.Add_Click({
     Remove-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "WindowsDefender" -ea 0
 
     Write-Host "Finished Removing Defender"
+    $LogBox.text = "`r`n" +"`r`n" + "Finished Removing Defender"
 })
 
 #########################################
@@ -291,6 +282,7 @@ $RemoveDefender.Add_Click({
 
 $UninstallOneDrive.Add_Click({
     Write-Host "Uninstalling OneDrive"
+    $LogBox.text = "`r`n" +"`r`n" + "Uninstalling OneDrive"
     
     New-PSDrive  HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT
     $onedrive = "$env:SYSTEMROOT\SysWOW64\OneDriveSetup.exe"
@@ -327,6 +319,7 @@ $UninstallOneDrive.Add_Click({
     Start-Process explorer.exe -NoNewWindow
 
     Write-Host "Finished Uninstalling OneDrive"
+    $LogBox.text = "`r`n" +"`r`n" + "Finished Uninstalling OneDrive"
 })
 
 #########################################
@@ -335,6 +328,7 @@ $UninstallOneDrive.Add_Click({
 
 $DisableTelemetry.Add_Click({
     Write-Host "Disabling Telemetry"
+    $LogBox.text = "`r`n" +"`r`n" + "Disabling Telemetry"
 
     Write-Host "Running O&O Shutup with Recommended Settings"
     Import-Module BitsTransfer
@@ -482,7 +476,9 @@ $DisableTelemetry.Add_Click({
     #Disabling the Diagnostics Tracking Service
     Stop-Service "DiagTrack"
     Set-Service "DiagTrack" -StartupType Disabled
-    Write-Host "Telemetry has been disabled!"
+
+    Write-Host "Finished Disabling Telemetry"
+    $LogBox.text = "`r`n" +"`r`n" + "Finished Disabling Telemetry"
 })
 
 #########################################
@@ -492,6 +488,7 @@ $DisableTelemetry.Add_Click({
 $RemoveCortana.Add_Click({
     # https://github.com/Sycnex/Windows10Debloater/blob/master/Individual%20Scripts/Disable%20Cortana
     Write-Host "Disabling Cortana"
+    $LogBox.text = "`r`n" +"`r`n" + "Disabling Cortana"
 
     $Cortana1 = "HKCU:\SOFTWARE\Microsoft\Personalization\Settings"
     $Cortana2 = "HKCU:\SOFTWARE\Microsoft\InputPersonalization"
@@ -511,6 +508,7 @@ $RemoveCortana.Add_Click({
 	Set-ItemProperty $Cortana3 HarvestContacts -Value 0
 
     Write-Host "Finished Disabling Cortana"
+    $LogBox.text = "`r`n" +"`r`n" + "Finished Disabling Cortana"
 })
 
 #########################################
@@ -528,8 +526,6 @@ $Software = @(
 )
 
 $InstallSoftware.Add_Click({
-    Write-Host "Installing Software"
-
     $SoftwareForm                   = New-Object system.Windows.Forms.Form
     $SoftwareForm.ClientSize        = New-Object System.Drawing.Point(433,528)
     $SoftwareForm.text              = "Install Software"
@@ -554,19 +550,24 @@ $InstallSoftware.Add_Click({
     }
 
     $InstallButton.Add_Click({
+        Write-Host "Installing Software"
+        $LogBox.text = "`r`n" +"`r`n" + "Installing Software"
         For ($i = 0; $i -le $SoftwareList.Items.Count-1; $i++) {
             if ($SoftwareList.GetItemChecked($i)) {
                 $Soft = $SoftwareList.Items[$i]
                 Write-Host "Installing $Soft"
+                $LogBox.text = "`r`n" +"`r`n" + "Installing $Soft"
                 winget install -e $Soft | Write-Host
-                if($?) { Write-Host "Installed $Soft" }
+                if($?) {
+                    Write-Host "Installed $Soft"
+                    $LogBox.text = "`r`n" +"`r`n" + "Installed $Soft"
+                }
             }
         }
+        Write-Host "Finished Installing Software"
+        $LogBox.text = "`r`n" +"`r`n" + "Finished Installing Software"
     })
-
     [void]$SoftwareForm.ShowDialog()
-
-    Write-Host "Finished Installing Software"
 })
 
 [void]$Form.ShowDialog()
