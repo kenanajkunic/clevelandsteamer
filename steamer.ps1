@@ -336,6 +336,12 @@ $UninstallOneDrive.Add_Click({
 $DisableTelemetry.Add_Click({
     Write-Host "Disabling Telemetry"
 
+    Write-Host "Running O&O Shutup with Recommended Settings"
+    Import-Module BitsTransfer
+    Start-BitsTransfer -Source "https://raw.githubusercontent.com/kenanajkunic/clevelandsteamer/master/ooshutup.cfg" -Destination ooshutup.cfg
+    Start-BitsTransfer -Source "https://dl5.oo-software.com/files/ooshutup10/OOSU10.exe" -Destination OOSU10.exe
+    ./OOSU10.exe ooshutup.cfg /quiet
+
     #Disables Windows Feedback Experience
     Write-Host "Disabling Windows Feedback Experience program"
     $Advertising = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo"
