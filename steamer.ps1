@@ -517,12 +517,33 @@ $RemoveCortana.Add_Click({
 
 $Software = @(
     "7zip.7zip"
+    "BlenderFoundation.Blender"
     "BraveSoftware.BraveBrowser"
     "Google.Chrome"
     "Discord.Discord"
+    "GIMP.GIMP"
+    "GiorgioTani.PeaZip"
+    "HandBrake.HandBrake"
+    "Inkscape.Inkscape"
+    "KDE.Krita"
     "Notepad++.Notepad++"
+    "Microsoft.Edge"
+    "Microsoft.Skype"
     "Microsoft.VisualStudioCode"
+    "Mozilla.Firefox"
+    "Mozilla.Thunderbird"
+    "Opera.Opera"
+    "PuTTY.PuTTY"
+    "qBittorrent.qBittorrent"
+    "RARLab.WinRAR"
+    "ShareX.ShareX"
+    "Spotify.Spotify"
+    "TheDocumentFoundation.LibreOffice"
+    "Valve.Steam"
     "VideoLAN.VLC"
+    "vim.vim"
+    "WinSCP.WinSCP"
+    "Zoom.Zoom"
 )
 
 $InstallSoftware.Add_Click({
