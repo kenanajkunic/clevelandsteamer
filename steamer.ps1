@@ -55,6 +55,20 @@ $UninstallOneDrive.height                  = 50
 $UninstallOneDrive.location                = New-Object System.Drawing.Point(5,115)
 $UninstallOneDrive.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',10)
 
+$DefaultUpdates                         = New-Object system.Windows.Forms.Button
+$DefaultUpdates.text                    = "Default Updates"
+$DefaultUpdates.width                   = 250
+$DefaultUpdates.height                  = 50
+$DefaultUpdates.location                = New-Object System.Drawing.Point(5,170)
+$DefaultUpdates.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',10)
+
+$SecurityUpdatesOnly                        = New-Object system.Windows.Forms.Button
+$SecurityUpdatesOnly.text                    = "Security Updates Only"
+$SecurityUpdatesOnly.width                   = 250
+$SecurityUpdatesOnly.height                  = 50
+$SecurityUpdatesOnly.location                = New-Object System.Drawing.Point(5,225)
+$SecurityUpdatesOnly.Font                    = New-Object System.Drawing.Font('Microsoft Sans Serif',10)
+
 $RemoveCortana                         = New-Object system.Windows.Forms.Button
 $RemoveCortana.text                    = "Disable Cortana"
 $RemoveCortana.width                   = 250
@@ -83,7 +97,7 @@ $LogBox.height                 = 100
 $LogBox.location               = New-Object System.Drawing.Point(5,295)
 $LogBox.Font                   = New-Object System.Drawing.Font('Microsoft Sans Serif',10)
 
-$Form.controls.AddRange(@($RemoveBloatware,$RemoveDefender,$UninstallOneDrive,$RemoveCortana,$DisableTelemetry,$InstallSoftware,$LogBox))
+$Form.controls.AddRange(@($RemoveBloatware,$RemoveDefender,$UninstallOneDrive,$DefaultUpdates,$SecurityUpdatesOnly,$RemoveCortana,$DisableTelemetry,$InstallSoftware,$LogBox))
 
 #########################################
 ### Remove Bloatware
@@ -320,6 +334,54 @@ $UninstallOneDrive.Add_Click({
 
     Write-Host "Finished Uninstalling OneDrive"
     $LogBox.text = "`r`n" +"`r`n" + "Finished Uninstalling OneDrive"
+})
+
+#########################################
+### Default Updates
+#########################################
+
+$DefaultUpdates.Add_Click({
+    Write-Host "Enabling driver offering through Windows Update..."
+    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Name "PreventDeviceMetadataFromNetwork" -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontPromptForWindowsUpdate" -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontSearchWindowsUpdate" -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DriverUpdateWizardWuSearchEnabled" -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "ExcludeWUDriversInQualityUpdate" -ErrorAction SilentlyContinue
+    Write-Host "Enabling Windows Update automatic restart..."
+    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoRebootWithLoggedOnUsers" -ErrorAction SilentlyContinue
+    Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUPowerManagement" -ErrorAction SilentlyContinue
+    Write-Host "Enabled driver offering through Windows Update"
+    $LogBox.text = "`r`n" +"`r`n" + "Set Windows Updates to Default Settings"
+})
+
+#########################################
+### Security Updates Only
+#########################################
+
+$SecurityUpdatesOnly.Add_Click({
+    Write-Host "Disabling driver offering through Windows Update..."
+    If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata")) {
+        New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Force | Out-Null
+    }
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata" -Name "PreventDeviceMetadataFromNetwork" -Type DWord -Value 1
+    If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching")) {
+        New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Force | Out-Null
+    }
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontPromptForWindowsUpdate" -Type DWord -Value 1
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DontSearchWindowsUpdate" -Type DWord -Value 1
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DriverSearching" -Name "DriverUpdateWizardWuSearchEnabled" -Type DWord -Value 0
+    If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate")) {
+        New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" | Out-Null
+    }
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Name "ExcludeWUDriversInQualityUpdate" -Type DWord -Value 1
+    Write-Host "Disabling Windows Update automatic restart..."
+    If (!(Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU")) {
+        New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force | Out-Null
+    }
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoRebootWithLoggedOnUsers" -Type DWord -Value 1
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUPowerManagement" -Type DWord -Value 0
+    Write-Host "Disabled driver offering through Windows Update"
+    $LogBox.text = "`r`n" +"`r`n" + "Set Windows Updates to Security Updates Only"
 })
 
 #########################################
