@@ -1,9 +1,23 @@
-# Cleveland Steamer
-*Un-shit your Windows install*
+# 💩 Cleveland Steamer
+*Un-sh\*t your Windows install*
 
-This is a culmination of scripts that help to remove bloatware and spyware from Windows.
+This project's goal is to aggregate helpful scripts to improve quality of life, speed, and privacy of a Windows installation.
 
-## Execution
+## ⚙ Features
+
+- Remove Bloatware
+- Disable Cortana
+- Remove Defender
+- Disable Telemetry
+- Remove OneDrive
+- Install Software
+- Security Updates Only
+
+🚧 More Coming Soon!
+
+## 🔨 Execution
+
+**Install all pending Windows Updates first before running the script.**
 
 Paste this command into PowerShell (Admin):
 
@@ -18,11 +32,3 @@ Or
 ![](https://i.imgur.com/RVrvnB7.png)
 
 - Unzip and run `steamer.ps1` as Administrator
-- Choose your preffered options and enjoy a lighter Windows experience!
-
-## Usage
-
-1. Install all updates available for Windows
-2. Execute Cleveland Steamer
-3. Click all the changes you want applied
-4. Reboot your computer and Enjoy!
