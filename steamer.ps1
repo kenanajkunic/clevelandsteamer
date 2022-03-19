@@ -31,8 +31,14 @@ else{
 
 $Form                            = New-Object system.Windows.Forms.Form
 $Form.ClientSize                 = New-Object System.Drawing.Point(525,400)
-$Form.text                       = "Cleveland Steamer"
+$Form.text                       = "Cleveland Steamer - Un-sh*t your Windows install"
 $Form.TopMost                    = $false
+$Form.StartPosition              = "CenterScreen"
+$Form.AutoScaleDimensions        = '192, 192'
+$Form.AutoScaleMode              = "Dpi"
+$Form.AutoSize                   = $True
+$Form.AutoScroll                 = $True
+$Form.FormBorderStyle            = 'FixedSingle'
 
 $RemoveBloatware                         = New-Object system.Windows.Forms.Button
 $RemoveBloatware.text                    = "Remove Bloatware"
