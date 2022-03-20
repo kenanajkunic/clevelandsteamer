@@ -11,7 +11,8 @@ This project's goal is to aggregate helpful scripts to improve quality of life, 
 - Disable Telemetry
 - Remove OneDrive
 - Install Software
-- Security Updates Only
+- Enable/Disable Windows Updates
+- Windows Security Updates Only
 
 🚧 More Coming Soon!
 
