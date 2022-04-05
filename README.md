@@ -30,7 +30,7 @@ This project's goal is to aggregate helpful scripts to improve quality of life, 
 Paste this command into PowerShell (Admin):
 
 ```
-iwr -useb https://bit.ly/3H3wPVd|iex
+iwr -useb https://bit.ly/csteamer|iex
 ```
 
 Or
