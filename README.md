@@ -6,7 +6,6 @@
 ![Stars](https://img.shields.io/github/stars/kenanajkunic/clevelandsteamer?style=flat-square)
 ![License](https://img.shields.io/github/license/kenanajkunic/clevelandsteamer?style=flat-square)
 ![Issues](https://img.shields.io/github/issues/kenanajkunic/clevelandsteamer?style=flat-square)
-[![Discord](https://img.shields.io/discord/955410993343758398?label=Discord&logo=Discord&style=flat-square)](https://discord.gg/NP9FcjAEHY)
 
 This project's goal is to aggregate helpful scripts to improve quality of life, speed, and privacy of a Windows installation.
 
